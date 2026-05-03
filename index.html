@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Text Readability Analyzer — Check Your Writing Level | BeLikeNative</title>
+<meta name="description" content="Free readability checker: Flesch-Kincaid Grade Level, Reading Ease score, passive voice detection, and improvement suggestions. Analyze your writing instantly.">
+<meta name="keywords" content="readability checker,Flesch-Kincaid calculator,reading level checker,readability score,text analyzer">
+<meta property="og:title" content="Free Text Readability Analyzer — Check Your Writing Level | BeLikeNative">
+<meta property="og:description" content="Instant Flesch-Kincaid Grade Level, Reading Ease, passive voice detection. Free, no signup required.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://theluckystrike.github.io/bln-readability-analyzer/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://theluckystrike.github.io/bln-readability-analyzer/">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#e0e0e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6;min-height:100vh}
+.container{max-width:900px;margin:0 auto;padding:20px}
+header{text-align:center;padding:30px 0 20px}
+h1{font-size:1.8rem;background:linear-gradient(135deg,#6ee7b7,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.subtitle{color:#9ca3af;font-size:0.95rem}
+.input-section{margin:20px 0}
+textarea{width:100%;height:220px;background:#12121a;border:1px solid #2a2a3a;border-radius:10px;color:#e0e0e8;font-size:0.95rem;padding:16px;resize:vertical;font-family:inherit;line-height:1.7;transition:border-color .2s}
+textarea:focus{outline:none;border-color:#3b82f6}
+textarea::placeholder{color:#4a4a5a}
+.results{display:none;margin-top:24px}
+.gauge-container{text-align:center;margin:20px 0 30px;padding:24px;background:#12121a;border-radius:12px;border:1px solid #2a2a3a}
+.gauge{position:relative;width:200px;height:110px;margin:0 auto 12px;overflow:hidden}
+.gauge-bg{width:200px;height:100px;border-radius:100px 100px 0 0;background:conic-gradient(from 180deg at 50% 100%,#ef4444 0deg,#f59e0b 90deg,#22c55e 180deg);position:absolute;top:0}
+.gauge-mask{width:160px;height:80px;border-radius:80px 80px 0 0;background:#12121a;position:absolute;top:20px;left:20px}
+.gauge-needle{width:3px;height:80px;background:#e0e0e8;position:absolute;bottom:10px;left:99px;transform-origin:bottom center;transition:transform .6s ease;border-radius:2px}
+.gauge-center{width:12px;height:12px;border-radius:50%;background:#e0e0e8;position:absolute;bottom:4px;left:94px}
+.gauge-label{font-size:2rem;font-weight:700;margin-top:4px}
+.gauge-sublabel{color:#9ca3af;font-size:0.85rem}
+.grade-summary{font-size:1.1rem;margin-top:12px;padding:10px 16px;border-radius:8px;display:inline-block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:20px 0}
+.card{background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:16px;text-align:center}
+.card-value{font-size:1.5rem;font-weight:700;color:#6ee7b7}
+.card-label{color:#9ca3af;font-size:0.78rem;margin-top:4px;text-transform:uppercase;letter-spacing:0.5px}
+.suggestions{background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:20px;margin:20px 0}
+.suggestions h3{color:#f59e0b;margin-bottom:12px;font-size:1rem}
+.suggestion-item{padding:8px 0;border-bottom:1px solid #1a1a2a;font-size:0.9rem;display:flex;align-items:flex-start;gap:8px}
+.suggestion-item:last-child{border:none}
+.suggestion-icon{flex-shrink:0;margin-top:2px}
+.branding{text-align:center;padding:30px 0;border-top:1px solid #1a1a2a;margin-top:30px}
+.branding a{color:#6ee7b7;text-decoration:none}
+.branding a:hover{text-decoration:underline}
+.branding p{color:#6b7280;font-size:0.85rem;margin-top:6px}
+.cta-link{display:inline-block;margin-top:12px;padding:10px 24px;background:linear-gradient(135deg,#6ee7b7,#3b82f6);color:#0a0a0f;border-radius:8px;text-decoration:none;font-weight:600;font-size:0.9rem;transition:opacity .2s}
+.cta-link:hover{opacity:0.9;text-decoration:none}
+.empty-state{text-align:center;color:#4a4a5a;padding:40px 0;font-size:0.95rem}
+@media(max-width:600px){h1{font-size:1.4rem}.cards{grid-template-columns:repeat(2,1fr)}.gauge{width:160px;height:90px}.gauge-bg{width:160px;height:80px}.gauge-mask{width:128px;height:64px;top:16px;left:16px}.gauge-needle{height:64px;left:79px}.gauge-center{left:74px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>Text Readability Analyzer</h1>
+<p class="subtitle">Paste your text below for instant readability analysis</p>
+</header>
+<div class="input-section">
+<textarea id="input" placeholder="Paste or type your text here to analyze readability. Get Flesch-Kincaid Grade Level, Reading Ease score, passive voice detection, and improvement suggestions — all calculated locally in your browser."></textarea>
+</div>
+<div class="results" id="results">
+<div class="gauge-container">
+<div class="gauge">
+<div class="gauge-bg"></div>
+<div class="gauge-mask"></div>
+<div class="gauge-needle" id="needle"></div>
+<div class="gauge-center"></div>
+</div>
+<div class="gauge-label" id="easeScore">—</div>
+<div class="gauge-sublabel">Flesch Reading Ease</div>
+<div class="grade-summary" id="gradeSummary"></div>
+</div>
+<div class="cards">
+<div class="card"><div class="card-value" id="fkGrade">—</div><div class="card-label">Grade Level</div></div>
+<div class="card"><div class="card-value" id="wordCount">0</div><div class="card-label">Words</div></div>
+<div class="card"><div class="card-value" id="sentenceCount">0</div><div class="card-label">Sentences</div></div>
+<div class="card"><div class="card-value" id="paragraphCount">0</div><div class="card-label">Paragraphs</div></div>
+<div class="card"><div class="card-value" id="avgSentLen">0</div><div class="card-label">Avg Sentence Len</div></div>
+<div class="card"><div class="card-value" id="avgSyllables">0</div><div class="card-label">Avg Syllables/Word</div></div>
+<div class="card"><div class="card-value" id="passiveVoice">0%</div><div class="card-label">Passive Voice</div></div>
+<div class="card"><div class="card-value" id="readingTime">0m</div><div class="card-label">Reading Time</div></div>
+</div>
+<div class="suggestions" id="suggestions">
+<h3>Suggestions for Improvement</h3>
+<div id="suggestionList"></div>
+</div>
+</div>
+<div class="empty-state" id="emptyState">Start typing or paste text above to see your readability analysis</div>
+<div class="branding">
+<p><strong>Powered by <a href="https://belikenative.com" target="_blank" rel="noopener">BeLikeNative</a></strong> — AI writing tools for 100+ languages</p>
+<p>Write clearly in any language with AI-powered grammar, tone, and style correction</p>
+<a class="cta-link" href="https://chromewebstore.google.com/detail/belikenative-ai-grammar-w/dgodddelmdkhanlhcfhiieegpmpjfgao" target="_blank" rel="noopener">Get the Chrome Extension — Free</a>
+</div>
+</div>
+<script>
+(function(){
+"use strict";
+
+/* --- Syllable counter --- */
+function countSyllables(word) {
+  if (!word || word.length === 0) { return 1; }
+  var w = word.toLowerCase().replace(/[^a-z]/g, "");
+  if (w.length <= 2) { return 1; }
+  var count = 0;
+  var vowels = "aeiouy";
+  var prevVowel = false;
+  for (var i = 0; i < w.length; i++) {
+    var isVowel = vowels.indexOf(w[i]) !== -1;
+    if (isVowel && !prevVowel) { count++; }
+    prevVowel = isVowel;
+  }
+  /* Silent e */
+  if (w.endsWith("e") && count > 1) { count--; }
+  /* -le ending */
+  if (w.endsWith("le") && w.length > 2 && vowels.indexOf(w[w.length - 3]) === -1) { count++; }
+  return Math.max(count, 1);
+}
+
+/* --- Sentence splitter --- */
+function splitSentences(text) {
+  var raw = text.split(/[.!?]+/).filter(function(s) { return s.trim().length > 0; });
+  return raw;
+}
+
+/* --- Word splitter --- */
+function splitWords(text) {
+  return text.split(/\s+/).filter(function(w) { return w.replace(/[^a-zA-Z0-9]/g, "").length > 0; });
+}
+
+/* --- Passive voice detection --- */
+function countPassive(sentences) {
+  var passive = 0;
+  var beVerbs = /\b(is|are|was|were|be|been|being)\b/i;
+  var pastParticiple = /\b\w+(ed|en|wn|nt|pt)\b/i;
+  for (var i = 0; i < sentences.length && i < 10000; i++) {
+    if (beVerbs.test(sentences[i]) && pastParticiple.test(sentences[i])) {
+      passive++;
+    }
+  }
+  return passive;
+}
+
+/* --- Grade label --- */
+function gradeLabel(grade) {
+  if (grade <= 1) { return "Kindergarten-1st Grade"; }
+  if (grade <= 5) { return "Elementary School (Grade " + Math.round(grade) + ")"; }
+  if (grade <= 8) { return "Middle School (Grade " + Math.round(grade) + ")"; }
+  if (grade <= 12) { return "High School (Grade " + Math.round(grade) + ")"; }
+  if (grade <= 16) { return "College Level"; }
+  return "Graduate Level";
+}
+
+/* --- Ease label + color --- */
+function easeInfo(score) {
+  if (score >= 80) { return { label: "Very Easy to Read", color: "#22c55e", bg: "rgba(34,197,94,0.12)" }; }
+  if (score >= 60) { return { label: "Easy to Read", color: "#6ee7b7", bg: "rgba(110,231,183,0.12)" }; }
+  if (score >= 40) { return { label: "Moderately Readable", color: "#f59e0b", bg: "rgba(245,158,11,0.12)" }; }
+  if (score >= 20) { return { label: "Difficult to Read", color: "#f97316", bg: "rgba(249,115,22,0.12)" }; }
+  return { label: "Very Difficult to Read", color: "#ef4444", bg: "rgba(239,68,68,0.12)" };
+}
+
+/* --- Generate suggestions --- */
+function getSuggestions(stats) {
+  var items = [];
+  if (stats.avgSentLen > 25) {
+    items.push({ icon: "&#9888;", text: "Your average sentence length is " + stats.avgSentLen + " words. Try to keep sentences under 20 words for clarity." });
+  }
+  if (stats.passivePct > 15) {
+    items.push({ icon: "&#9888;", text: stats.passivePct + "% of sentences use passive voice. Convert to active voice for stronger writing." });
+  }
+  if (stats.avgSyllables > 1.8) {
+    items.push({ icon: "&#9888;", text: "Average syllables per word is " + stats.avgSyllables + ". Use simpler words where possible." });
+  }
+  if (stats.ease < 40) {
+    items.push({ icon: "&#9888;", text: "Your text is rated as difficult. Break long sentences and replace jargon with simpler terms." });
+  }
+  if (stats.avgSentLen < 8 && stats.sentenceCount > 3) {
+    items.push({ icon: "&#128161;", text: "Your sentences are very short. Vary sentence length for better flow." });
+  }
+  if (items.length === 0) {
+    items.push({ icon: "&#10003;", text: "Your text is well-written and readable. Great job!" });
+  }
+  if (stats.ease >= 60) {
+    items.push({ icon: "&#10003;", text: "Good readability score! Your text is accessible to a wide audience." });
+  }
+  return items;
+}
+
+/* --- Main analysis --- */
+function analyze(text) {
+  console.assert(typeof text === "string", "analyze: text must be a string");
+
+  var resultsEl = document.getElementById("results");
+  var emptyEl = document.getElementById("emptyState");
+
+  if (text.trim().length < 10) {
+    resultsEl.style.display = "none";
+    emptyEl.style.display = "block";
+    return;
+  }
+
+  resultsEl.style.display = "block";
+  emptyEl.style.display = "none";
+
+  var words = splitWords(text);
+  var sentences = splitSentences(text);
+  var paragraphs = text.split(/\n\s*\n/).filter(function(p) { return p.trim().length > 0; });
+
+  var wordCount = words.length;
+  var sentenceCount = Math.max(sentences.length, 1);
+  var paragraphCount = Math.max(paragraphs.length, 1);
+
+  console.assert(wordCount >= 0, "analyze: wordCount must be non-negative");
+  console.assert(sentenceCount >= 1, "analyze: sentenceCount must be at least 1");
+
+  var totalSyllables = 0;
+  for (var i = 0; i < words.length && i < 100000; i++) {
+    totalSyllables += countSyllables(words[i]);
+  }
+
+  var avgSentLen = Math.round((wordCount / sentenceCount) * 10) / 10;
+  var avgSyllables = Math.round((totalSyllables / Math.max(wordCount, 1)) * 100) / 100;
+
+  /* Flesch Reading Ease */
+  var ease = 206.835 - (1.015 * (wordCount / sentenceCount)) - (84.6 * (totalSyllables / Math.max(wordCount, 1)));
+  ease = Math.max(0, Math.min(100, Math.round(ease * 10) / 10));
+
+  /* Flesch-Kincaid Grade Level */
+  var fkGrade = (0.39 * (wordCount / sentenceCount)) + (11.8 * (totalSyllables / Math.max(wordCount, 1))) - 15.59;
+  fkGrade = Math.max(0, Math.round(fkGrade * 10) / 10);
+
+  var passiveCount = countPassive(sentences);
+  var passivePct = Math.round((passiveCount / sentenceCount) * 100);
+
+  var readingMin = Math.max(1, Math.ceil(wordCount / 238));
+
+  /* Update DOM */
+  document.getElementById("easeScore").textContent = ease;
+  document.getElementById("fkGrade").textContent = fkGrade;
+  document.getElementById("wordCount").textContent = wordCount;
+  document.getElementById("sentenceCount").textContent = sentenceCount;
+  document.getElementById("paragraphCount").textContent = paragraphCount;
+  document.getElementById("avgSentLen").textContent = avgSentLen;
+  document.getElementById("avgSyllables").textContent = avgSyllables;
+  document.getElementById("passiveVoice").textContent = passivePct + "%";
+  document.getElementById("readingTime").textContent = readingMin + "m";
+
+  /* Gauge needle: ease 0 = -90deg (red/left), ease 100 = 90deg (green/right) */
+  var angle = ((ease / 100) * 180) - 90;
+  document.getElementById("needle").style.transform = "rotate(" + angle + "deg)";
+
+  /* Grade summary */
+  var info = easeInfo(ease);
+  var summary = document.getElementById("gradeSummary");
+  summary.textContent = info.label + " — " + gradeLabel(fkGrade);
+  summary.style.background = info.bg;
+  summary.style.color = info.color;
+
+  /* Ease score color */
+  document.getElementById("easeScore").style.color = info.color;
+
+  /* Suggestions */
+  var suggestions = getSuggestions({ avgSentLen: avgSentLen, passivePct: passivePct, avgSyllables: avgSyllables, ease: ease, sentenceCount: sentenceCount });
+  var html = "";
+  for (var j = 0; j < suggestions.length && j < 20; j++) {
+    html += '<div class="suggestion-item"><span class="suggestion-icon">' + suggestions[j].icon + '</span><span>' + suggestions[j].text + '</span></div>';
+  }
+  document.getElementById("suggestionList").innerHTML = html;
+}
+
+/* --- Debounce --- */
+var timer = null;
+document.getElementById("input").addEventListener("input", function() {
+  if (timer) { clearTimeout(timer); }
+  timer = setTimeout(function() {
+    analyze(document.getElementById("input").value);
+  }, 300);
+});
+
+})();
+</script>
+</body>
+</html>
